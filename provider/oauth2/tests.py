@@ -442,7 +442,7 @@ class AccessTokenTest(BaseOAuth2TestCase):
         })
 
         self.assertEqual(400, response.status_code, response.content)
-        self.assertEqual('invalid_grant', json.loads(response.content)['error'])
+        self.assertEqual(u'invalid_grant', json.loads(response.content)['error'])
 
     def test_access_token_response_valid_token_type(self):
         token = self._login_authorize_get_token()
@@ -462,10 +462,10 @@ class AuthBackendTest(BaseOAuth2TestCase):
                          2, "Didn't return the right client.")
 
     def test_request_params_client_backend(self):
-        request = type('Request', (object,), {'REQUEST': {}})()
+        request = type('Request', (object,), {'GET': {}})()
 
-        request.REQUEST['client_id'] = self.get_client().client_id
-        request.REQUEST['client_secret'] = self.get_client().client_secret
+        request.GET['client_id'] = self.get_client().client_id
+        request.GET['client_secret'] = self.get_client().client_secret
 
         self.assertEqual(RequestParamsClientBackend().authenticate(request).id,
                          2, "Didn't return the right client.'")

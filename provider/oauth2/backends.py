@@ -44,6 +44,19 @@ class BasicClientBackend(object):
             return None
 
 
+def _get_clean_lists(request):
+    data = {}
+    data.update(request.GET)
+    if hasattr(request, 'POST'):
+        data.update(request.POST)
+
+    for key, value in data.items():
+        if isinstance(value, list):
+            data[key] = value[0]
+
+    return data
+
+
 class RequestParamsClientBackend(object):
     """
     Backend that tries to authenticate a client through request parameters
@@ -53,7 +66,7 @@ class RequestParamsClientBackend(object):
         if request is None:
             return None
 
-        form = ClientAuthForm(request.REQUEST)
+        form = ClientAuthForm(_get_clean_lists(request))
 
         if form.is_valid():
             return form.cleaned_data.get('client')
@@ -74,7 +87,7 @@ class PublicPasswordBackend(object):
         if request is None:
             return None
 
-        form = PublicPasswordGrantForm(request.REQUEST)
+        form = PublicPasswordGrantForm(_get_clean_lists(request))
 
         if form.is_valid():
             return form.cleaned_data.get('client')
